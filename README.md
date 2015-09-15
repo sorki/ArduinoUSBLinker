@@ -1,6 +1,14 @@
 ArduinoUSBLinker
 ================
 
+** This is a modified version for KK2 board to be used as a programmer **
+
+We've had a broken KK2 board lying around that seemed like a good fit for re-use.
+
+Get a precompiled hex file from http://48.io/~rmarko/flying/ArduinoUSBLinker.hex
+
+Flash with <code>avrdude -p atmega324pa -c usbasp -U flash:w:ArduinoUSBLinker.hex:i</code>
+
  ** WARNING **
    Always use great care when working with powered ESC's that are connected
    to motors. Especially when reflashing firmware and reseting devices it is
