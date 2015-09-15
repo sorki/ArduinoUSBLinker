@@ -41,12 +41,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 #define AUL_SET_TIMER_MODE TCCR2B = g_timerConfig
 #endif
 
-// Default PD2/INT0
-#define AUL_DEFAULT_PIN 18
+// Default KK2 AUX pin (PB0)
+#define AUL_DEFAULT_PIN 0
 
 #define AUL_BUFSIZE 300
 
-#define AUL_SERIALTIMEOUT ((F_CPU >> 7) / (9600 >> 4))
+// #define AUL_SERIALTIMEOUT ((F_CPU >> 7) / (9600 >> 4))
+// redefined as it computed value is 280
+// and the counter on atmega384pa won't reach that value
+#define AUL_SERIALTIMEOUT 250
 
 #define AUL_PININPUT  ((*g_signalDDR)  &= ~(g_signalPinPortNum))
 #define AUL_PINOUTPUT ((*g_signalDDR)  |=  (g_signalPinPortNum))
@@ -143,12 +146,12 @@ static AUL_ASCII_INT_TYPE AUL_atoi(const char* s)
 
 #if !defined(MULTIWII)
 
-#define AUL_SerialInit(x) Serial.begin(g_baudRate)
-#define AUL_SerialAvailable() Serial.available()
-#define AUL_SerialRead() Serial.read()
-#define AUL_SerialWrite(x) Serial.write(x)
-#define AUL_SerialWriteBuf(x,y) Serial.write(x,y)
-#define AUL_SerialWriteStr(x) Serial.write((const char*)x)
+#define AUL_SerialInit(x) Serial1.begin(g_baudRate)
+#define AUL_SerialAvailable() Serial1.available()
+#define AUL_SerialRead() Serial1.read()
+#define AUL_SerialWrite(x) Serial1.write(x)
+#define AUL_SerialWriteBuf(x,y) Serial1.write(x,y)
+#define AUL_SerialWriteStr(x) Serial1.write((const char*)x)
 
 #else // MULTIWII
 
@@ -578,6 +581,7 @@ void AUL_loop(uint8_t port)
     sei(); // Re-enable interrupts for Serial
   #endif
 
+  AUL_SerialWriteStr("KK2 ArduinoUSBLinker");
   // Set timer2 to count ticks
   AUL_SET_TIMER_MODE;
 
@@ -672,7 +676,7 @@ void AUL_loop(uint8_t port)
         if (setbaud)
         {
           // Arduino Serial.flush does not work correctly
-          Serial.flush();
+          Serial1.flush();
           
           // Temporarily set timer2 to count ticks/128
 #if defined(__AVR_ATmega8__)
@@ -746,6 +750,8 @@ timeout:
 
 int main(int argc, char* argv[])
 {
+  // KK2 RXD1 TXD1 available on
+  //     ELE  AIL
   AUL_loop(0);
   return 0;
 }
